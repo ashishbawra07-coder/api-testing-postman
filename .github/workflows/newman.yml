@@ -1,0 +1,55 @@
+name: 🔌 Newman API Tests
+
+on:
+  push:
+    branches: [main, develop]
+  pull_request:
+    branches: [main]
+  schedule:
+    - cron: '0 21 * * *'   # Daily at 2:30 AM IST
+
+jobs:
+  api-tests:
+    name: 🧪 API Tests — ${{ matrix.environment }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+
+    strategy:
+      matrix:
+        environment: [qa, staging]
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Install Newman & reporters
+        run: npm ci
+
+      - name: Run API tests — ${{ matrix.environment }}
+        run: |
+          newman run collections/BookStore_API.postman_collection.json \
+            -e environments/${{ matrix.environment }}.postman_environment.json \
+            --reporters cli,htmlextra,junit \
+            --reporter-htmlextra-export reports/${{ matrix.environment }}-report.html \
+            --reporter-junit-export reports/${{ matrix.environment }}-results.xml \
+            --bail
+
+      - name: Upload HTML report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: api-report-${{ matrix.environment }}
+          path: reports/
+          retention-days: 14
+
+      - name: Publish test results
+        if: always()
+        uses: mikepenz/action-junit-report@v4
+        with:
+          report_paths: 'reports/*.xml'

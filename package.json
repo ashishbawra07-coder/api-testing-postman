@@ -1,0 +1,16 @@
+{
+  "name": "api-testing-postman",
+  "version": "1.0.0",
+  "description": "REST API test suite using Postman collections with Newman CI integration",
+  "scripts": {
+    "test": "newman run collections/BookStore_API.postman_collection.json -e environments/qa.postman_environment.json --reporters cli,htmlextra --reporter-htmlextra-export reports/qa-report.html",
+    "test:staging": "newman run collections/BookStore_API.postman_collection.json -e environments/staging.postman_environment.json --reporters cli,htmlextra --reporter-htmlextra-export reports/staging-report.html",
+    "test:report": "open reports/qa-report.html"
+  },
+  "dependencies": {
+    "newman": "^6.1.2",
+    "newman-reporter-htmlextra": "^1.22.11"
+  },
+  "author": "Ashish Bawra <ashishbawra07@gmail.com>",
+  "license": "MIT"
+}
