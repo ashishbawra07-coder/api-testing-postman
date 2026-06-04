@@ -1,11 +1,7 @@
 name: 🔌 Newman API Tests
 
 on:
-  push:
-    branches: [main, develop]
-  pull_request:
-    branches: [main]
-  workflow_dispatch:         # ✅ Run manually anytime from GitHub Actions UI
+  workflow_dispatch:         # ✅ ONLY runs manually from GitHub Actions UI — no automatic triggers
 
 jobs:
   api-tests:
@@ -40,8 +36,8 @@ jobs:
             -e environments/${{ matrix.environment }}.postman_environment.json \
             --reporters cli,htmlextra,junit \
             --reporter-htmlextra-export reports/${{ matrix.environment }}-report.html \
-            --reporter-junit-export reports/${{ matrix.environment }}-results.xml \
-            --bail
+            --reporter-junit-export reports/${{ matrix.environment }}-results.xml
+            # Note: --bail removed so one failed test doesn't stop all others
 
       - name: Upload HTML report
         if: always()
