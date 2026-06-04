@@ -3,6 +3,10 @@ name: 🔌 Newman API Tests
 on:
   workflow_dispatch:         # ✅ ONLY runs manually from GitHub Actions UI — no automatic triggers
 
+permissions:
+  checks: write
+  contents: read
+
 jobs:
   api-tests:
     name: 🧪 API Tests — ${{ matrix.environment }}
