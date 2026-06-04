@@ -5,8 +5,7 @@ on:
     branches: [main, develop]
   pull_request:
     branches: [main]
-  schedule:
-    - cron: '0 21 * * *'   # Daily at 2:30 AM IST
+  workflow_dispatch:         # ✅ Run manually anytime from GitHub Actions UI
 
 jobs:
   api-tests:
@@ -15,6 +14,7 @@ jobs:
     timeout-minutes: 15
 
     strategy:
+      fail-fast: false        # ✅ Don't cancel other env if one fails
       matrix:
         environment: [qa, staging]
 
@@ -26,10 +26,13 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: '20'
-          cache: 'npm'
+          cache: 'npm'        # ✅ Works now — package-lock.json exists
 
       - name: Install Newman & reporters
         run: npm ci
+
+      - name: Create reports directory
+        run: mkdir -p reports
 
       - name: Run API tests — ${{ matrix.environment }}
         run: |
@@ -53,3 +56,5 @@ jobs:
         uses: mikepenz/action-junit-report@v4
         with:
           report_paths: 'reports/*.xml'
+          check_name: 'Newman Test Results — ${{ matrix.environment }}'
+          fail_on_failure: true
