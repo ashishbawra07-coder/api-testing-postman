@@ -34,10 +34,8 @@ jobs:
         run: |
           newman run collections/BookStore_API.postman_collection.json \
             -e environments/${{ matrix.environment }}.postman_environment.json \
-            --reporters cli,htmlextra,junit \
-            --reporter-htmlextra-export reports/${{ matrix.environment }}-report.html \
+            --reporters cli,junit \
             --reporter-junit-export reports/${{ matrix.environment }}-results.xml
-            # Note: --bail removed so one failed test doesn't stop all others
 
       - name: Upload HTML report
         if: always()
